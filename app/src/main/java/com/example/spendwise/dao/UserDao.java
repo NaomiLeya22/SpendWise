@@ -1,0 +1,20 @@
+package com.example.spendwise.dao;
+
+import androidx.room.Dao;
+import androidx.room.Insert;
+import androidx.room.Query;
+import androidx.room.Update;
+
+import com.example.spendwise.data.local.UserEntity;
+
+@Dao
+public interface UserDao {
+    @Insert
+    long insert(UserEntity user);
+
+    @Update
+    void update(UserEntity user);
+
+    @Query("SELECT * FROM users WHERE email = :email LIMIT 1")
+    UserEntity findByEmail(String email);
+}
