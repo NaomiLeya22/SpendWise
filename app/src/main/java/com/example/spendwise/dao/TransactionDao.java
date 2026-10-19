@@ -8,8 +8,10 @@ import androidx.room.Delete;
 
 import androidx.lifecycle.LiveData;
 
+import com.example.spendwise.analytics.TransactionRecord;
 import com.example.spendwise.data.local.TransactionEntity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Dao
@@ -31,4 +33,14 @@ public interface TransactionDao {
 
     @Query("UPDATE transactions SET syncStatus = :status WHERE transactionId = :id")
     void updateSyncStatus(long id, String status);
+
+    @Query("SELECT * FROM transactions WHERE syncStatus = 'PENDING'")
+    List<TransactionEntity> getPendingTransactions();
+
+    @Query(
+            "UPDATE transactions " +
+                    "SET syncStatus = 'SYNCED', remoteId = :serverId " +
+                    "WHERE transactionId = :localId"
+    )
+    void markSynced(long localId, long serverId);
 }

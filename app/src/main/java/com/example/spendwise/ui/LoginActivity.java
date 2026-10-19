@@ -2,43 +2,72 @@ package com.example.spendwise.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.textfield.TextInputEditText;
 import com.example.spendwise.R;
+import com.example.spendwise.dto.AuthDtos;
+import com.example.spendwise.network.ApiAuthSession;
+import com.example.spendwise.sync.NetworkSyncScheduler;
+import com.google.android.material.textfield.TextInputEditText;
 
- public class LoginActivity extends AppCompatActivity {
-        TextInputEditText etEmail, etPassword;
-        Button btnLogin;
-        TextView tvRegister;
+public class LoginActivity extends AppCompatActivity {
+    private TextInputEditText emailEditText, passwordEditText;
+    private Button loginButton;
+    private TextView tvRegister;
 
-        @Override protected void onCreate(Bundle s) {
-            super.onCreate(s);
-            setContentView(R.layout.activity_login);
-            etEmail = findViewById(R.id.etEmail);
-            etPassword = findViewById(R.id.etPassword);
-            btnLogin = findViewById(R.id.btnLogin);
-            tvRegister = findViewById(R.id.tvRegister);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
 
-            btnLogin.setOnClickListener(v -> {
-                String email = etEmail.getText().toString().trim();
-                String pass = etPassword.getText().toString().trim();
-                if (TextUtils.isEmpty(email)) { etEmail.setError("Required"); return; }
-                if (TextUtils.isEmpty(pass)) { etPassword.setError("Required"); return; }
-                // Mock successful login
-                startActivity(new Intent(this, DashboardActivity.class));
-                finish();
-            });
+        emailEditText = findViewById(R.id.etEmail);
+        passwordEditText = findViewById(R.id.etPassword);
+        loginButton = findViewById(R.id.btnLogin);
+        tvRegister = findViewById(R.id.tvRegister);
 
-            tvRegister.setOnClickListener(v -> {
-                // For Week 3, reuse Login as register placeholder
-                etEmail.setText("");
-                etPassword.setText("");
-            });
-        }
+        loginButton.setOnClickListener(v -> {
+            String email = emailEditText.getText() != null ? emailEditText.getText().toString().trim() : "";
+            String password = passwordEditText.getText() != null ? passwordEditText.getText().toString() : "";
+
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Enter email and password", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            loginButton.setEnabled(false);
+
+            ApiAuthSession.login(this, email, password,
+                    new ApiAuthSession.ResultCallback() {
+                        @Override
+                        public void onSuccess(AuthDtos.UserDto user) {
+                            runOnUiThread(() -> {
+                                loginButton.setEnabled(true);
+                                NetworkSyncScheduler.schedule(LoginActivity.this);
+                                startActivity(new Intent(
+                                        LoginActivity.this, DashboardActivity.class
+                                ));
+                                finish();
+                            });
+                        }
+
+                        @Override
+                        public void onError(String message) {
+                            runOnUiThread(() -> {
+                                loginButton.setEnabled(true);
+                                Toast.makeText(LoginActivity.this, message,
+                                        Toast.LENGTH_LONG).show();
+                            });
+                        }
+                    });
+        });
+
+        tvRegister.setOnClickListener(v -> {
+            if (emailEditText != null) emailEditText.setText("");
+            if (passwordEditText != null) passwordEditText.setText("");
+        });
     }
-
-
+}

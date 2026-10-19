@@ -28,4 +28,8 @@ public class TransactionEntity {
     public String syncStatus; // "synced" or "pending"
     public long createdAt;
     public long updatedAt;
+    public String category;
+
+    public String clientUuid;
+    public long remoteId;
 }
