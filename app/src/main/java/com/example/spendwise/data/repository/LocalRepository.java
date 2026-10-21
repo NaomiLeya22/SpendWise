@@ -75,6 +75,21 @@ public class LocalRepository {
         });
     }
 
+    // Users
+    public void getUserByEmail(String email, Callback<UserEntity> cb) {
+        io.execute(() -> {
+            UserEntity user = userDao.findByEmail(email);
+            if (cb != null) cb.onComplete(user);
+        });
+    }
+
+    public void registerUser(UserEntity user, Callback<Long> cb) {
+        io.execute(() -> {
+            long id = userDao.insert(user);
+            if (cb != null) cb.onComplete(id);
+        });
+    }
+
     // Simple callback interface
     public interface Callback<T> { void onComplete(T result); }
 }

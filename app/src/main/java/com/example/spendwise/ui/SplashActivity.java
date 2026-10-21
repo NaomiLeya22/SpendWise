@@ -7,6 +7,7 @@ import android.os.Looper;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.spendwise.R;
+import com.example.spendwise.network.TokenStore;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -19,14 +20,17 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
 
         handler.postDelayed(() -> {
-            Intent intent = new Intent(
-                    SplashActivity.this,
-                    LoginActivity.class
-            );
+            TokenStore tokenStore = new TokenStore(this);
+            Intent intent;
+            if (tokenStore.isLoggedIn()) {
+                intent = new Intent(SplashActivity.this, DashboardActivity.class);
+            } else {
+                intent = new Intent(SplashActivity.this, LoginActivity.class);
+            }
 
             startActivity(intent);
             finish();
-        }, 1000);
+        }, 1200);
 
     }
 }

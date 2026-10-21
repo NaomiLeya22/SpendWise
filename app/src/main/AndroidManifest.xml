@@ -36,16 +36,27 @@
             android:name=".ui.DashboardActivity"
             android:exported="false"/>
 
+        <activity
+            android:name=".ui.TransactionsActivity"
+            android:exported="false"/>
+
+        <activity
+            android:name=".ui.BudgetsActivity"
+            android:exported="false"/>
+
+        <activity
+            android:name=".ui.ProfileActivity"
+            android:exported="false"/>
 
         <activity
             android:name=".ui.AddTransactionActivity"
             android:exported="false"/>
 
         <activity
-            android:name=".AnalyticsActivity"
+            android:name=".analytics.AnalyticsActivity"
             android:exported="false" />
+        <activity android:name="com.example.spendwise.QrReceiptActivity" />
 
     </application>
-
 
 </manifest>

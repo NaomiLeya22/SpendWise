@@ -8,16 +8,20 @@ import androidx.lifecycle.MediatorLiveData;
 import com.example.spendwise.data.local.TransactionEntity;
 import com.example.spendwise.data.local.BudgetEntity;
 import com.example.spendwise.data.repository.LocalRepository;
+import com.example.spendwise.network.TokenStore;
 import java.util.List;
 
 public class DashboardViewModel extends AndroidViewModel {
     private final LocalRepository repo;
-    private final long currentUserId = 1L; // demo
+    private final long currentUserId;
     public final MediatorLiveData<Double> remainingBudget = new MediatorLiveData<>();
 
     public DashboardViewModel(@NonNull Application application) {
         super(application);
         repo = new LocalRepository(application);
+        TokenStore tokenStore = new TokenStore(application);
+        long serverId = tokenStore.getServerUserId();
+        currentUserId = serverId > 0 ? serverId : 1L;
         LiveData<List<BudgetEntity>> budgets = repo.getBudgetsLive(currentUserId, getCurrentPeriod());
         LiveData<List<TransactionEntity>> txs = repo.getTransactionsLive(currentUserId);
 

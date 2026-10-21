@@ -8,16 +8,20 @@ import androidx.lifecycle.LiveData;
 import com.example.spendwise.data.local.TransactionEntity;
 import com.example.spendwise.data.model.Transaction;
 import com.example.spendwise.data.repository.LocalRepository;
+import com.example.spendwise.network.TokenStore;
 import java.util.List;
 
 public class TransactionViewModel extends AndroidViewModel {
     private final LocalRepository repo;
     private LiveData<List<TransactionEntity>> transactionsLive;
-    private final long currentUserId = 1L; // for Week 4 demo; replace with auth user
+    private final long currentUserId;
 
     public TransactionViewModel(@NonNull Application application) {
         super(application);
         repo = new LocalRepository(application);
+        TokenStore tokenStore = new TokenStore(application);
+        long serverId = tokenStore.getServerUserId();
+        currentUserId = serverId > 0 ? serverId : 1L;
         transactionsLive = repo.getTransactionsLive(currentUserId);
     }
 
